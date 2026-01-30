@@ -235,7 +235,7 @@
         .cart-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; font-family: var(--font-serif); }
 
         /* Modal Checkout */
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 500px; background: white; z-index: 2500; padding: 30px; border-radius: 8px; opacity: 0; visibility: hidden; transition: all 0.3s; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; background: white; z-index: 2500; padding: 30px; border-radius: 8px; opacity: 0; visibility: hidden; transition: all 0.3s; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
         .modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         
         .form-group { margin-bottom: 15px; }
@@ -344,9 +344,6 @@
         .image-preview-item img { width: 100%; height: 100%; object-fit: cover; }
         .image-preview-item .remove-btn { position: absolute; top: 0; right: 0; background: rgba(255,0,0,0.8); color: white; border: none; width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         
-        .product-card.out-of-stock .product-image img {
-            filter: grayscale(80%);
-        }
         .product-card.out-of-stock .product-image img {
             filter: grayscale(80%);
         }
@@ -884,9 +881,14 @@
             <!-- Nequi Details -->
             <div id="details-nequi" class="payment-details active">
                 <div class="text-center">
-                    <p style="font-size: 0.9rem; margin-bottom: 15px;">Escanea este código QR con tu app Nequi para pagar.</p>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=tel:573157243588" alt="Código QR Nequi" class="qr-code-img">
-                    <p style="font-size: 0.8rem; color: #666;">O envía al número: <strong>315 724 3588</strong></p>
+                    <p style="font-size: 0.9rem; margin-bottom: 10px;">Escanea tu QR o copia el número:</p>
+                    <!-- NOTA: Debes guardar tu captura real de Nequi como 'qr-nequi.jpg' en la carpeta del proyecto -->
+                    <img src="qr-nequi.jpg" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=3157243588'" alt="Código QR Nequi" class="qr-code-img">
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; background: #f5f5f5; padding: 8px; border-radius: 8px; width: fit-content; margin-left: auto; margin-right: auto;">
+                        <strong style="font-size: 1.1rem; letter-spacing: 1px;">315 724 3588</strong>
+                        <button type="button" class="btn btn-sm btn-light" onclick="copyToClipboard('3157243588')" title="Copiar Número"><i class="fas fa-copy"></i></button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label style="margin-top: 15px;">Tu Número de Celular (Para confirmar)</label>
@@ -1240,6 +1242,12 @@
             toast.innerText = message;
             toast.classList.add("show");
             setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Número copiado al portapapeles 📋");
+            });
         }
 
         // Persistencia de datos (LocalStorage)
@@ -1645,9 +1653,6 @@
 
                 // 3. Procesar nuevos archivos (Múltiples)
                 if (imageFiles.length > 0) {
-                    const promises = Array.from(imageFiles).map(file => compressImage(file));
-                    const compressedImages = await Promise.all(promises);
-                    finalImagesList = [...finalImagesList, ...compressedImages];
                     if (IMGBB_API_KEY && IMGBB_API_KEY !== "TU_API_KEY_DE_IMGBB_AQUI") {
                         // Subir a ImgBB (Gratis y sin tarjeta)
                         showToast("Subiendo imágenes a ImgBB... ⏳");
