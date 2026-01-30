@@ -280,7 +280,7 @@
             border-radius: 4px;
             padding: 16px;
             position: fixed;
-            z-index: 3000;
+            z-index: 3500; /* Aumentado para que se vea sobre el admin */
             left: 50%;
             bottom: 30px;
             transform: translateX(-50%);
@@ -703,7 +703,7 @@
                 padding: 40px 0;
                 gap: 20px;
                 transform: translateY(-150%);
-                transition: transform 0.4s ease;
+                transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
                 box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             }
 
@@ -824,7 +824,7 @@
             </div>
             <div class="copyright">
                 <p>&copy; 2026 BANTTÚ by SV. Todos los derechos reservados.</p>
-            <p style="font-size: 0.7rem; margin-top: 5px; opacity: 0.6;"><a href="https://nexor-tecnology-systems.netlify.app/" target="_blank" style="color: inherit; text-decoration: none;">Desarrollado por Nexor - Tecnology Systems</a></p>
+            <p style="font-size: 0.7rem; margin-top: 5px; opacity: 0.6;"><a href="https://nexorindustrieshealttech-afk.github.io/nexor-technology-systems/index.html" target="_blank" style="color: inherit; text-decoration: none;">Desarrollado por Nexor - Tecnology Systems</a></p>
                 <i class="fas fa-lock admin-trigger" onclick="openAdminLogin()" title="Acceso Administrativo"></i>
             </div>
         </div>
@@ -882,8 +882,7 @@
             <div id="details-nequi" class="payment-details active">
                 <div class="text-center">
                     <p style="font-size: 0.9rem; margin-bottom: 10px;">Escanea tu QR o copia el número:</p>
-                    <!-- NOTA: Debes guardar tu captura real de Nequi como 'qr-nequi.jpg' en la carpeta del proyecto -->
-                    <img src="qr-nequi.jpg" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=3157243588'" alt="Código QR Nequi" class="qr-code-img">
+                    <img src="qr-nequi.jpg" alt="Código QR Nequi" class="qr-code-img">
                     
                     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; background: #f5f5f5; padding: 8px; border-radius: 8px; width: fit-content; margin-left: auto; margin-right: auto;">
                         <strong style="font-size: 1.1rem; letter-spacing: 1px;">315 724 3588</strong>
@@ -1345,7 +1344,7 @@
                 }
 
                 // Generar HTML de imágenes (Galería)
-                let imagesHtml = `<img src="${p.images[0]}" id="img-${p.id}" alt="${p.name}">`;
+                let imagesHtml = `<img src="${p.images[0]}" id="img-${p.id}" alt="${p.name}" loading="lazy">`;
                 let dotsHtml = '';
                 if(p.images.length > 1) {
                     dotsHtml = '<div class="gallery-nav">';
