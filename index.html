@@ -1157,7 +1157,8 @@
 
         // Refactorizado: Ahora usa ID para buscar el producto (Más seguro)
         function addToCart(productId, sizeSelectId) {
-            const product = products.find(p => p.id === productId);
+            // Usamos == para permitir coincidencia entre string (HTML) y number (JSON)
+            const product = products.find(p => p.id == productId);
             if (!product) return;
 
             const sizeSelect = document.getElementById(sizeSelectId);
@@ -1168,9 +1169,14 @@
                 return;
             }
             
+            // Obtener color seleccionado
+            const colorEl = document.querySelector(`#color-wrap-${productId} .selected`);
+            const color = colorEl ? colorEl.dataset.color : Object.keys(product.stock)[0];
+
             // Stock check
-            const availableStock = product.stock[size] || 0;
-            const inCartCount = cart.filter(item => item.productId === productId && item.size === size).length;
+            const availableStock = (product.stock[color] && product.stock[color][size]) || 0;
+            // Usamos product.id para asegurar que el tipo de dato (número/texto) coincida siempre
+            const inCartCount = cart.filter(item => item.productId === product.id && item.size === size && item.color === color).length;
 
             if (inCartCount >= availableStock) {
                 showToast("No hay más stock para esta talla.");
@@ -1184,12 +1190,13 @@
                 price: product.price,
                 image: product.images[0],
                 size: size,
-                color: document.querySelector(`#color-wrap-${productId} .selected`)?.dataset.color || 'Único'
+                color: color
             });
 
             saveCart();
             renderCart();
             showToast("Producto añadido al carrito");
+            openCart(); // Abrir el carrito automáticamente para confirmar visualmente
         }
 
         function removeFromCart(index) {
@@ -1324,7 +1331,7 @@
                 if (colors.length > 0) {
                     colorHtml = `<div class="color-select-wrap" id="color-wrap-${p.id}">`;
                     colors.forEach((c, idx) => {
-                        colorHtml += `<span class="color-option ${idx===0?'selected':''}" onclick="selectColor(${p.id}, '${c}', this)" data-color="${c}">${c}</span>`;
+                        colorHtml += `<span class="color-option ${idx===0?'selected':''}" onclick="selectColor('${p.id}', '${c}', this)" data-color="${c}">${c}</span>`;
                     });
                     colorHtml += `</div>`;
                 }
@@ -1335,7 +1342,7 @@
                 if(p.images.length > 1) {
                     dotsHtml = '<div class="gallery-nav">';
                     p.images.forEach((img, idx) => {
-                        dotsHtml += `<div class="gallery-dot ${idx===0?'active':''}" onclick="changeImage(${p.id}, '${img}', this)"></div>`;
+                        dotsHtml += `<div class="gallery-dot ${idx===0?'active':''}" onclick="changeImage('${p.id}', '${img}', this)"></div>`;
                     });
                     dotsHtml += '</div>';
                 }
@@ -1353,7 +1360,7 @@
                         <select class="size-select" id="size-${p.id}" ${totalStock === 0 ? 'disabled' : ''}>
                             <!-- Se llena dinámicamente -->
                         </select>
-                        <button class="add-to-cart-btn" onclick="addToCart(${p.id}, 'size-${p.id}')" ${totalStock === 0 ? 'disabled' : ''}>
+                        <button class="add-to-cart-btn" onclick="addToCart('${p.id}', 'size-${p.id}')" ${totalStock === 0 ? 'disabled' : ''}>
                             ${totalStock === 0 ? 'Agotado' : 'Añadir al Carrito'}
                         </button>
                     </div>
@@ -1379,7 +1386,7 @@
         }
 
         function updateSizes(pid, color) {
-            const product = products.find(p => p.id === pid);
+            const product = products.find(p => p.id == pid);
             const select = document.getElementById(`size-${pid}`);
             const stockData = product.stock[color];
             
